@@ -15,22 +15,26 @@ $(document).ready(function(){
                                             ]}      
     ];
 
+    var max_food_id = 1;
     dropMenu();
 
+    /*绘制出二级联动菜单*/
     function dropMenu(){
         for (var i = 0; i < menu.length; i++) {
-            var a1 = $("<a href='#'></a>").text(menu[i].name);
-            var span1 = $("<span></span>");
-            span1.addClass("icon");
+            var a1 = $("<a href='#'></a>").text(menu[i].name); /*一级菜名类型*/
+            var icon_next = $("<span></span>").addClass("next");
+            /*二级菜单*/
             var two_menu = $("<span></span>").text(menu[i].name);
             var span_add = $("<sapn></sapn>");
             span_add.addClass("add");
             two_menu.addClass("two-menu");
             var ul2 = $("<ul></ul>").append(two_menu,span_add);
-            var li1 = $("<li></li>").append(a1,span1,ul2);
+            var li1 = $("<li></li>").append(a1,icon_next,ul2);
             li1.attr("index",i);
+            li1.attr("draggable","true");
+//            li1.addClass("column");
             $(".menu").append(li1);
-
+            /*增加具体菜名类型下的菜名*/
             for(var j = 0; j < menu[i].food.length; j++){
                 var span_del = $("<span></span>");
                 var span_modi = $("<span></span>");
@@ -39,84 +43,169 @@ $(document).ready(function(){
                 var li2 = $("<li></li>").text(menu[i].food[j].name+":"+menu[i].food[j].price);
                 li2.append(span_del,span_modi);
                 li2.attr("index",j);
+                li2.attr("draggable","true");
+                li2.addClass("column")
                 ul2.append(li2);
+                if(menu[i].food[j].food_id > max_food_id){
+                    max_food_id = menu[i].food[j].food_id
+                }
             }
         }
+
         $(".menu li").mouseover(function(){
             $(this).find("ul").show();
         });
         $(".menu li").mouseout(function(){
             $(this).find("ul").hide();
         });
-
+       add_event();
+       drag();
+    }
+    function add_event(){
         $(".add").click(addMenu);
         $(".del").click(delMenu);
         $(".modifier").click(modifiMenu);
     }
-
+    /*增加，删除，修改的模态框*/
     var $modal_overlay = $("#modal-overlay");
-    var indexMenu;
     var $modal_overlay_del = $("#modal-overlay-del");
+    var $modal_overlay_modifi = $("#modal-overlay-modifi");
+    var indexMenu;          /*menu的一级菜单下标*/
+    var indexMenu2;         /*menu的二级菜单下标*/
+
+    /*增加数据*/
     function addMenu(){
-        //弹出模态框
-        $("#menu-name").val();
-        $("#menu-price").val();
-
-
-//        $("input").attr("value","");
-        var showOrHide = $modal_overlay.css("visibility")=="visible"?"hidden":"visible";
-        $modal_overlay.css('visibility',showOrHide);
+        $("#menu-name").val('');
+        $("#menu-price").val('');
+        openModal($modal_overlay)
         indexMenu = $(this).parents("li").attr("index");
     }
     $(".remodal-confirm").click(function(){
-        console.log($("#menu-name").attr("value"))
-        console.log($("#menu-price").attr("value"))
         var addData = {
-            food_id:8,
+            food_id:max_food_id+1,
             name:$("#menu-name").val(),
             price: $("#menu-price").val()
         }
-//        $(this).siblings("table").find("input").attr("index","");
-//        console.log($(this).siblings("table").find("input"));
-
         menu[indexMenu].food.push(addData);
-        $(".menu").empty();
-        dropMenu();
-        $modal_overlay.css('visibility',"hidden");
+        redraw($modal_overlay);
     });
     $(".overlay").click(function(){
-        $modal_overlay.css('visibility',"hidden");
+        closeModal($modal_overlay);
     });
     $(".remodal-cancel").click(function(){
-        $modal_overlay.css('visibility',"hidden");
+        closeModal($modal_overlay);
     });
 
-
-    var indexMenu2;
+    /*删除数据*/
     function delMenu(){
-        $("#del-data").text($(this).parent().text())
-        var showOrHide = $modal_overlay_del.css("visibility")=="visible"?"hidden":"visible";
-        $modal_overlay_del.css('visibility',showOrHide);
+        $("#del-data").text($(this).parent().text());
+        openModal($modal_overlay_del)
         indexMenu = $(this).parent().parents("li").attr("index") ;
         indexMenu2 = $(this).parent().attr("index");
     }
-
     $(".remodal-confirm-del").click(function(){
         menu[indexMenu].food.splice(indexMenu2,1);
-        $(".menu").empty();
-        dropMenu();
-        $modal_overlay_del.css('visibility',"hidden");
+        redraw($modal_overlay_del);
     });
-
     $(".overlay-del").click(function(){
-        $modal_overlay_del.css('visibility',"hidden");
+        closeModal($modal_overlay_del)
     });
     $(".remodal-cancel-del").click(function(){
-        $modal_overlay_del.css('visibility',"hidden");
+        closeModal($modal_overlay_del);
     });
 
+    /*修改数据*/
     function modifiMenu(){
+        $("#del-data").text($(this).parent().text());
+        openModal($modal_overlay_modifi)
+        indexMenu = $(this).parent().parents("li").attr("index") ;
+        indexMenu2 = $(this).parent().attr("index");
+        $("#menu-name-modifi").val(menu[indexMenu].food[indexMenu2].name);
+        $("#menu-price-modifi").val(menu[indexMenu].food[indexMenu2].price);
+    }
+    $(".remodal-confirm-modifi").click(function(){
+        menu[indexMenu].food[indexMenu2].name = $("#menu-name-modifi").val();
+        menu[indexMenu].food[indexMenu2].price = $("#menu-price-modifi").val();
 
+        redraw($modal_overlay_modifi);
+    });
+    $(".overlay-modifi").click(function(){
+        closeModal($modal_overlay_modifi)
+    });
+    $(".remodal-cancel-modifi").click(function(){
+        closeModal($modal_overlay_modifi)
+    });
+
+    /*打开模态框*/
+    function openModal(obj){
+        var showOrHide = obj.css("visibility")=="visible"?"hidden":"visible";
+        obj.css('visibility',showOrHide);
+    }
+    /*关闭模态框*/
+    function closeModal(obj){
+        obj.css('visibility',"hidden");
+    }
+    /*重绘*/
+    function redraw(obj){
+        $(".menu").empty();
+        dropMenu();
+        closeModal(obj);
+    }
+
+    //拖拉
+    function drag(){
+        function handleDragStart(e) {
+            this.style.opacity = '1';
+            dragSrcEl = this;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        }
+
+        function handleDragEnter(e) {
+            this.classList.add('over');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('over');
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            return false;
+        }
+        //拖拽完成后，作用在拖拽元素上
+        function handleDrop(e) {
+            if (dragSrcEl != this) {
+                var parentIndex = this.parentNode.parentNode.getAttribute("index");
+                var temp = menu[parentIndex].food[dragSrcEl.getAttribute("index")];
+                menu[parentIndex].food[dragSrcEl.getAttribute("index")] = menu[parentIndex].food[this.getAttribute("index")];
+                menu[parentIndex].food[this.getAttribute("index")] = temp;
+                dragSrcEl.innerHTML = this.innerHTML;
+                this.innerHTML = e.dataTransfer.getData('text/html');
+
+            }
+            return false;
+        }
+        //拖拽完成后，作用在被拖拽元素上
+        function handleDragEnd(e) {
+            this.style.opacity = '1';
+            [].forEach.call(divs, function(d) {
+                d.classList.remove('over');
+            });
+            add_event();
+        }
+        var divs = document.querySelectorAll('.column');
+
+        [].forEach.call(divs, function(d) {
+            d.addEventListener('dragstart', handleDragStart, false);/*规定了被拖动的元素*/
+            d.addEventListener('dragenter', handleDragEnter, false);
+            d.addEventListener('dragover', handleDragOver, false);/*在何处放置被拖动的元素*/
+            d.addEventListener('dragleave', handleDragLeave, false);
+            d.addEventListener('drop', handleDrop, false);
+            d.addEventListener('dragend', handleDragEnd, false);
+        });
     }
 });
 
