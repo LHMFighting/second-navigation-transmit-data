@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>二级菜单</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <div class="nav">
+        <ul class="menu"></ul>
+    </div>
+
+    <div id="modal-overlay">
+        <div id="modal-data" >
+            <h1>增加菜单</h1>
+            <table>
+                <tr>
+                    <td>菜单名：</td>
+                    <td><input type="text" id="menu-name" value=""/></td>
+                </tr>
+                <tr>
+                    <td>菜单价格：</td>
+                    <td><input type="text" id="menu-price" value=""/></td>
+                </tr>
+            </table>
+            <a class="remodal-cancel" href="#">Cancel</a>
+            <a class="remodal-confirm" href="#">OK</a>
+            <a href="#" class="remodal-close overlay"></a>
+        </div>
+    </div>
+
+    <div id="modal-overlay-del">
+        <div id="modal-data-del" >
+            <h1>删除菜单</h1>
+            <p>确定删除 <b id="del-data"></b> 这个菜单吗？</p>
+            <a class="remodal-cancel-del" href="#">Cancel</a>
+            <a class="remodal-confirm-del" href="#">OK</a>
+            <a href="#" class="remodal-close-del overlay-del"></a>
+        </div>
+    </div>
+</body>
+<script src="script/jquery-1.12.0.min.js"></script>
+<script src="script/index.js"></script>
+</html>
