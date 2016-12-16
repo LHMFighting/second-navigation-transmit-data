@@ -52,6 +52,7 @@ $(document).ready(function(){
                 }
             }
         }
+
         $(".menu li").mouseover(function(){
             $(this).find("ul").show();
         });
@@ -178,8 +179,7 @@ $(document).ready(function(){
         function handleDrop(e) {
             /*同级之间的交换*/
             if (dragSrcEl != this) {
-//                console.log(dragSrcEl);/*被拖拉-0*/
-                console.log(this);/*放置位置-1*/
+                console.log(this);
                 var parentIndex = this.parentNode.parentNode.getAttribute("index");
                 var temp = menu[parentIndex].food[dragSrcEl.getAttribute("index")];
                 menu[parentIndex].food[dragSrcEl.getAttribute("index")] = menu[parentIndex].food[this.getAttribute("index")];
