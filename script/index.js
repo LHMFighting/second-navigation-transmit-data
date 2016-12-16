@@ -33,7 +33,7 @@ $(document).ready(function(){
             var li1 = $("<li></li>").append(a1,icon_next,ul2);
             li1.attr("index",i);
             li1.attr("draggable","true");
-//            li1.addClass("droppable1");
+            li1.addClass("droppable");
             $(".menu").append(li1);
             /*增加具体菜名类型下的菜名*/
             for(var j = 0; j < menu[i].food.length; j++){
@@ -52,7 +52,6 @@ $(document).ready(function(){
                 }
             }
         }
-
         $(".menu li").mouseover(function(){
             $(this).find("ul").show();
         });
@@ -61,7 +60,6 @@ $(document).ready(function(){
         });
        add_event();
        drag();
-//       drop2();
     }
     function add_event(){
         $(".add").click(addMenu);
@@ -159,7 +157,6 @@ $(document).ready(function(){
         function handleDragStart(e) {
             this.style.opacity = '1';
             dragSrcEl = this;
-            console.log(this)
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/html', this.innerHTML);
             add_event();
@@ -171,7 +168,6 @@ $(document).ready(function(){
             this.classList.remove('over');
         }
         function handleDragOver(e) {
-            console.log(e);
             if (e.preventDefault) {
                 e.preventDefault();
             }
@@ -181,11 +177,6 @@ $(document).ready(function(){
         //拖拽完成后，作用在拖拽元素上
         function handleDrop(e) {
             /*同级之间的交换*/
-            var index1 = this.parentNode.parentNode.getAttribute("index");
-            var index2 = dragSrcEl.getAttribute("index");
-//            console.log(index1);
-//            console.log(index2);
-//            console.log(e.dataTransfer.getData("text/html").parentNode);
             if (dragSrcEl != this) {
 //                console.log(dragSrcEl);/*被拖拉-0*/
                 console.log(this);/*放置位置-1*/
@@ -207,10 +198,31 @@ $(document).ready(function(){
             });
             add_event();
         }
+
+        function drop_menu(ev)
+        {
+//            console.log(dragSrcEl)/*被拖动*/
+//            console.log(this)/*放置的位置*/
+            var $dragSrcEl = $(dragSrcEl);
+            var $ul_dest = $(this.childNodes[2]);
+            var src_index1 = $dragSrcEl.parents("li").attr("index");
+            var src_index2 = $dragSrcEl.attr("index");
+            var des_index1 = $(this).attr("index");
+            var dex_index2 = parseInt($ul_dest.children().last().attr("index"))+1;
+            if(src_index1 != des_index1){
+                menu[des_index1].food[dex_index2] = menu[src_index1].food[src_index2];
+                menu[src_index1].food.splice(src_index2,1);
+                $(".menu").empty();
+                dropMenu();
+                add_event();
+            }
+
+            ev.preventDefault();
+        }
+
         var divs = document.querySelectorAll('.column');
 
         [].forEach.call(divs, function(d) {
-            console.log(d);
             d.addEventListener('dragstart', handleDragStart, false);/*规定了被拖动的元素*/
             d.addEventListener('dragenter', handleDragEnter, false);
             d.addEventListener('dragover', handleDragOver, false);/*在何处放置被拖动的元素*/
@@ -218,34 +230,13 @@ $(document).ready(function(){
             d.addEventListener('drop', handleDrop, false);
             d.addEventListener('dragend', handleDragEnd, false);
         });
-    }
-//    function drop2(){
-//        $( ".colum").draggable({
-//            appendTo: "body",
-//            helper: "clone"
-//        });
-//        $( ".droppable1" ).droppable({
-//            activeClass: "ui-state-default",
-//            hoverClass: "ui-state-hover",
-//            accept: ":not(.ui-sortable-helper)",
-//            drop: function( event, ui ) {
-//                console.log(888)
-//                console.log(this)
-////                $( this ).find( "ul" ).remove();
-//                $( "<li></li>" ).text( ui.draggable.text() ).appendTo( this );
-//            }
-//        }).sortable({
-//            items: "li:not(.placeholder)",
-//            sort: function() {
-////                console.log("menu")
-////                console.log(this);
-//                // 获取由 droppable 与 sortable 交互而加入的条目
-//                // 使用 connectWithSortable 可以解决这个问题，但不允许您自定义 active/hoverClass 选项
-//                $( this ).removeClass( "ui-state-default" );
-//            }
-//        });
-//    }
 
+        var ul = document.querySelectorAll(".droppable");
+        [].forEach.call(ul,function(e){
+            e.addEventListener('drop',drop_menu,false);
+            e.addEventListener('dragover',handleDragOver,false);
+        });
+    }
 });
 
 /*
