@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>jQuery UI 放置（Droppable） - 购物车演示</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="http://jqueryui.com/resources/demos/style.css">
+    <style>
+        h1 { padding: .2em; margin: 0; }
+        #products { float:left; width: 500px; margin-right: 2em; }
+        #cart { width: 200px; float: left; margin-top: 1em; }
+        /* 定义列表样式，以便最大化 droppable */
+        #cart ol { margin: 0; padding: 1em 0 1em 3em; }
+    </style>
+    <script>
+        $(function() {
+//            $( "#catalog" ).accordion();
+            $( ".draggable1").draggable({
+                appendTo: "body",
+                helper: "clone"
+            });
+            $( ".colum" ).droppable({
+                activeClass: "ui-state-default",
+                hoverClass: "ui-state-hover",
+                accept: ":not(.ui-sortable-helper)",
+                drop: function( event, ui ) {
+                    console.log(this)
+                    console.log($(this))
+                    $( this ).find( ".placeholder" ).remove();
+                    $( "<li></li>" ).text( ui.draggable.text() ).appendTo( this );
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+
+<div id="products">
+    <h1 class="ui-widget-header">产品</h1>
+    <div id="catalog">
+
+        <div class="colum">
+            <ul><h2><a href="#">T-Shirts</a></h2>
+                <li class="draggable1">Lolcat Shirt</li>
+                <li class="draggable1">Cheezeburger Shirt</li>
+                <li class="draggable1">Buckit Shirt</li>
+            </ul>
+        </div>
+
+        <div class="colum>
+            <ul"><h2><a href="#">Bags</a></h2>
+                <li class="draggable1">Zebra Striped</li>
+                <li class="draggable1">Black Leather</li>
+                <li class="draggable1">Alligator Leather</li>
+            </ul>
+        </div>
+        <h2><a href="#">Gadgets</a></h2>
+        <div>
+            <ul class="colum">
+                <li>iPhone</li>
+                <li>iPod</li>
+                <li>iPad</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!--<div id="cart">-->
+    <!--<h1 class="ui-widget-header">购物车</h1>-->
+    <!--<div class="ui-widget-content">-->
+        <!--<ol class="colum">-->
+            <!--<li class="placeholder">添加产品到这里</li>-->
+        <!--</ol>-->
+    <!--</div>-->
+<!--</div>-->
+<!--<div>-->
+    <!--<h1 class="ui-widget-header">购物车</h1>-->
+    <!--<div class="ui-widget-content">-->
+        <!--<ol class="colum">-->
+            <!--<li class="placeholder">添加产品到这里</li>-->
+        <!--</ol>-->
+    <!--</div>-->
+<!--</div>-->
+
+
+</body>
+</html>
